@@ -1,16 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>CSV to Invoice PDF</title>
+  <meta charset="UTF-8">
+  <title>Clock2Doc - Upload CSV</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    label { display: block; margin-top: 20px; }
+    button { margin-top: 20px; padding: 10px 20px; }
+  </style>
 </head>
 <body>
-    <h1>Upload Clockify CSV to Generate PDF Invoice</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <label for="csv_file">Choose CSV File:</label>
-        <input type="file" name="csv_file" id="csv_file" required>
-        <br><br>
-        <button type="submit">Generate PDF</button>
-    </form>
+  <h1>Clock2Doc</h1>
+  <form id="csvForm" method="POST" enctype="multipart/form-data" action="/upload">
+    <label for="csv_file">Upload your CSV file:</label>
+    <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+
+    <div id="columnSelection" style="display:none;">
+      <label for="duration_column">Which column is used for duration?</label>
+      <select name="duration_column" id="duration_column" required></select>
+      <button type="submit">Generate Invoice</button>
+    </div>
+  </form>
+
+  <script>
+    document.getElementById('csv_file').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const text = event.target.result;
+        const lines = text.split("\n");
+        const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ''));
+
+        const select = document.getElementById("duration_column");
+        select.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join("");
+        document.getElementById("columnSelection").style.display = "block";
+      };
+      reader.readAsText(file);
+    });
+  </script>
 </body>
 </html>

@@ -12,17 +12,6 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 def index():
     return render_template("index.html")
 
-def parse_duration_column(df):
-    if "Duration" in df.columns:
-        df["Hours"] = pd.to_timedelta(df["Duration"]).dt.total_seconds() / 3600
-    elif "Time (h)" in df.columns:
-        df["Hours"] = pd.to_numeric(df["Time (h)"], errors="coerce")
-    elif "Duration (h)" in df.columns:
-        df["Hours"] = pd.to_numeric(df["Duration (h)"], errors="coerce")
-    else:
-        raise ValueError(f"No valid duration column found. Available columns: {', '.join(df.columns)}")
-    return df
-
 @app.route("/upload", methods=["POST"])
 def upload_invoice():
     try:
@@ -31,8 +20,14 @@ def upload_invoice():
             return "No CSV uploaded", 400
 
         df = pd.read_csv(file)
-        df = parse_duration_column(df)
 
+        selected_column = request.form.get("duration_column")
+        if selected_column not in df.columns:
+            return f"Column '{selected_column}' not found in CSV.", 400
+
+        # Convert selected duration column to numeric
+        df["Hours"] = pd.to_numeric(df[selected_column], errors="coerce")
+        df["Hours"] = df["Hours"].fillna(0)
         total_hours = round(df["Hours"].sum(), 2)
 
         html = render_template("invoice_template.html",

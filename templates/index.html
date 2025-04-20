@@ -18,6 +18,10 @@
     <div id="columnSelection" style="display:none;">
       <label for="duration_column">Which column is used for duration?</label>
       <select name="duration_column" id="duration_column" required></select>
+
+      <label for="date_column">Which column is used for date?</label>
+      <select name="date_column" id="date_column" required></select>
+
       <button type="submit">Generate Invoice</button>
     </div>
   </form>
@@ -33,8 +37,12 @@
         const lines = text.split("\n");
         const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ''));
 
-        const select = document.getElementById("duration_column");
-        select.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join("");
+        const durationSelect = document.getElementById("duration_column");
+        const dateSelect = document.getElementById("date_column");
+
+        durationSelect.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join("");
+        dateSelect.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join("");
+
         document.getElementById("columnSelection").style.display = "block";
       };
       reader.readAsText(file);

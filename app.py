@@ -36,10 +36,15 @@ def upload_invoice(bank_details = request.form.get("bank_details", "").replace("
         # Prepare total hours
         total_hours = df["Hours"].sum()
 
-        html = render_template("invoice_template.html", entries=df.to_dict(orient="records"), total_hours=f"{total_hours:.2f}")
-        pdf_path = os.path.join(UPLOAD_FOLDER, "invoice_preview.pdf")
-        HTML(string=html).write_pdf(pdf_path)
-        return send_file(pdf_path, mimetype="application/pdf")
+   html = render_template("invoice_template.html",
+                       business=business,
+                       invoice_number=invoice_number,
+                       date_str=date_str,
+                       entries=df.to_dict(orient="records"),
+                       total="{:.2f}".format(total_amount),
+                       logo_path=logo_path,
+                       bank_details=bank_details)
+
 
     except Exception as e:
         return f"Error generating invoice: {e}", 500

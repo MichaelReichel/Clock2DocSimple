@@ -1,59 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Clock2Doc - Upload CSV</title>
-  <style>
-    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
-    label { display: block; margin-top: 20px; }
-    button { margin-top: 20px; padding: 10px 20px; }
-  </style>
+  <meta charset="UTF-8" />
+  <title>Invoice Generator</title>
 </head>
 <body>
-  <h1>Clock2Doc</h1>
-  <form id="csvForm" method="POST" enctype="multipart/form-data" action="/upload">
-    <label for="csv_file">Upload your CSV file:</label>
-    <input type="file" id="csv_file" name="csv_file" accept=".csv" required>
+  <h1>Generate Invoice from Clockify CSV</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <label for="csv_file">Upload CSV:</label><br>
+    <input type="file" name="csv_file" id="csv_file" required><br><br>
 
-    <div id="columnSelection" style="display:none;">
-      <label for="duration_column">Which column is used for duration?</label>
-      <select name="duration_column" id="duration_column" required></select>
+    <label for="duration_column">Which column is used for duration?</label><br>
+    <input type="text" name="duration_column" id="duration_column" value="Duration (h)" required><br><br>
 
-      <label for="date_column">Which column is used for date?</label>
-      <select name="date_column" id="date_column" required></select>
-<label for="bank_details">Bank Account Details:</label><br>
-<textarea id="bank_details" name="bank_details" rows="4" cols="50" placeholder="Account Name: \nAccount Number: \nBranch Code: "></textarea><br><br>
-      <button type="submit">Generate Invoice</button>
-    </div>
+    <label for="date_column">Which column is used for date?</label><br>
+    <input type="text" name="date_column" id="date_column" value="Start Date" required><br><br>
+
+    <label for="hourly_rate">Hourly Rate:</label><br>
+    <input type="number" step="0.01" name="hourly_rate" required><br><br>
+
+    <label for="business_name">Business Name:</label><br>
+    <input type="text" name="business_name"><br><br>
+
+    <label for="invoice_number">Invoice Number:</label><br>
+    <input type="text" name="invoice_number"><br><br>
+
+    <label for="logo_file">Upload Logo (optional):</label><br>
+    <input type="file" name="logo_file"><br><br>
+
+    <label for="bank_details">Bank Account Details:</label><br>
+    <textarea id="bank_details" name="bank_details" rows="4" cols="50" placeholder="Account Name: \nAccount Number: \nBranch Code: "></textarea><br><br>
+
+    <button type="submit">Generate PDF</button>
   </form>
-  <script>
-  document.getElementById('csv_file').addEventListener('change', function (e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function (event) {
-      const text = event.target.result;
-      const lines = text.split("\n");
-      const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ''));
-
-      const durationSelect = document.getElementById("duration_column");
-      const dateSelect = document.getElementById("date_column");
-
-      durationSelect.innerHTML = headers.map(h => {
-        const selected = h === "Duration (h)" ? "selected" : "";
-        return `<option value="${h}" ${selected}>${h}</option>`;
-      }).join("");
-
-      dateSelect.innerHTML = headers.map(h => {
-        const selected = h === "Start Date" ? "selected" : "";
-        return `<option value="${h}" ${selected}>${h}</option>`;
-      }).join("");
-
-      document.getElementById("columnSelection").style.display = "block";
-    };
-    reader.readAsText(file);
-  });
-</script>
 </body>
 </html>

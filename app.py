@@ -14,7 +14,8 @@ def index():
     return render_template("index.html")
 
 @app.route("/upload", methods=["POST"])
-def upload_invoice():
+def upload_invoice(bank_details = request.form.get("bank_details", "").replace("\r\n", "<br>").replace("\n", "<br>")
+):
     try:
         file = request.files["csv_file"]
         if not file:

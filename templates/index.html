@@ -25,28 +25,34 @@
       <button type="submit">Generate Invoice</button>
     </div>
   </form>
-
   <script>
-    document.getElementById('csv_file').addEventListener('change', function (e) {
-      const file = e.target.files[0];
-      if (!file) return;
+  document.getElementById('csv_file').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const text = event.target.result;
-        const lines = text.split("\n");
-        const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ''));
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const text = event.target.result;
+      const lines = text.split("\n");
+      const headers = lines[0].split(",").map(h => h.trim().replace(/"/g, ''));
 
-        const durationSelect = document.getElementById("duration_column");
-        const dateSelect = document.getElementById("date_column");
+      const durationSelect = document.getElementById("duration_column");
+      const dateSelect = document.getElementById("date_column");
 
-        durationSelect.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join("");
-        dateSelect.innerHTML = headers.map(h => `<option value="${h}">${h}</option>`).join("");
+      durationSelect.innerHTML = headers.map(h => {
+        const selected = h === "Duration (h)" ? "selected" : "";
+        return `<option value="${h}" ${selected}>${h}</option>`;
+      }).join("");
 
-        document.getElementById("columnSelection").style.display = "block";
-      };
-      reader.readAsText(file);
-    });
-  </script>
+      dateSelect.innerHTML = headers.map(h => {
+        const selected = h === "Start Date" ? "selected" : "";
+        return `<option value="${h}" ${selected}>${h}</option>`;
+      }).join("");
+
+      document.getElementById("columnSelection").style.display = "block";
+    };
+    reader.readAsText(file);
+  });
+</script>
 </body>
 </html>
